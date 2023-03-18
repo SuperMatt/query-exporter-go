@@ -34,7 +34,7 @@ type Endpoint struct {
 	Address      string   `yaml:"address"`
 	Headers      []Header `yaml:"headers"`
 	Query        string   `yaml:"query"`
-	QueryOffsets []int    `yaml:"query_offsets"`
+	QueryOffsets []string `yaml:"query_offsets"`
 }
 
 type Header struct {

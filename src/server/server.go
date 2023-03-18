@@ -65,6 +65,10 @@ func (s *Server) recordMetrics() {
 		for {
 
 			for _, endpoint := range s.Config.Endpoints {
+				if len(endpoint.QueryOffsets) == 0 {
+					endpoint.QueryOffsets = []string{"Now"}
+				}
+
 				for _, queryOffset := range endpoint.QueryOffsets {
 
 					dnsError := 0
@@ -73,6 +77,15 @@ func (s *Server) recordMetrics() {
 					success := 0
 					timestamp := time.Now().Unix()
 					duration := int64(0)
+					timestampParseError := 0
+
+					queryTime, err := ParseQueryOffset(queryOffset)
+					if err != nil {
+						timestampParseError = 1
+						s.Logger.Errorf("Error parsing query offset: %s", err)
+					}
+
+					s.Logger.Debugf("Query timestamp: %d", queryTime)
 
 					query := "count(up)"
 					if endpoint.Query != "" {
@@ -100,16 +113,17 @@ func (s *Server) recordMetrics() {
 							portErrors = 1
 							s.Logger.Errorf("Error checking port: %s", err)
 						} else {
-							success, statusCode, timestamp, duration = s.QueryPrometheus(endpoint, scheme, host, port, query, queryOffset)
+							success, statusCode, timestamp, duration = s.QueryPrometheus(endpoint, scheme, host, port, query, queryTime)
 						}
 					}
 					queryDnsError.WithLabelValues(endpoint.Name).Set(float64(dnsError))
 					queryPortError.WithLabelValues(endpoint.Name).Set(float64(portErrors))
-					querySuccess.WithLabelValues(endpoint.Name, fmt.Sprintf("%d", queryOffset)).Set(float64(success))
-					queryStatus.WithLabelValues(endpoint.Name, fmt.Sprintf("%d", queryOffset)).Set(float64(statusCode))
-					queryInfo.WithLabelValues(endpoint.Address, endpoint.Name, endpoint.Query, fmt.Sprintf("%d", queryOffset)).Set(1)
-					queryTimestamp.WithLabelValues(endpoint.Name, fmt.Sprintf("%d", queryOffset)).Set(float64(timestamp))
-					queryDuration.WithLabelValues(endpoint.Name, fmt.Sprintf("%d", queryOffset)).Set(float64(duration))
+					querySuccess.WithLabelValues(endpoint.Name, queryOffset).Set(float64(success))
+					queryStatus.WithLabelValues(endpoint.Name, queryOffset).Set(float64(statusCode))
+					queryInfo.WithLabelValues(endpoint.Address, endpoint.Name, endpoint.Query, queryOffset).Set(1)
+					queryTimestamp.WithLabelValues(endpoint.Name, queryOffset).Set(float64(timestamp))
+					queryDuration.WithLabelValues(endpoint.Name, queryOffset).Set(float64(duration))
+					queryTimestampError.WithLabelValues(endpoint.Name, queryOffset).Set(float64(timestampParseError))
 				}
 			}
 			time.Sleep(15 * time.Second)

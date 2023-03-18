@@ -54,4 +54,9 @@ var (
 		Name: MerticName("query_port_error"),
 		Help: "If the query had a port error",
 	}, []string{"name"})
+
+	queryTimestampError = promauto.NewGaugeVec(prometheus.GaugeOpts{
+		Name: MerticName("query_timestamp_error"),
+		Help: "If the query had a timestamp error",
+	}, []string{"name", "query_offset"})
 )

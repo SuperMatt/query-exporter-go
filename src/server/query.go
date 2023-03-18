@@ -9,12 +9,12 @@ import (
 	"github.com/supermatt/query-exporter-go/src/config"
 )
 
-func (s *Server) QueryPrometheus(endpoint config.Endpoint, scheme, host, port, query string, queryOffset int) (success int, statusCode int, timestamp int64, duration int64) {
+func (s *Server) QueryPrometheus(endpoint config.Endpoint, scheme, host, port, query string, queryTime int64) (success int, statusCode int, timestamp int64, duration int64) {
 	address := url.URL{
 		Scheme:   scheme,
 		Host:     fmt.Sprintf("%s:%s", host, port),
 		Path:     "/api/v1/query",
-		RawQuery: fmt.Sprintf("query=%s&time=%d", query, time.Now().Add(-time.Duration(queryOffset)*time.Second).Unix()),
+		RawQuery: fmt.Sprintf("query=%s&time=%d", query, queryTime),
 	}
 	s.Logger.Debugf("Querying: %s", address.String())
 

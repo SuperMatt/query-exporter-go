@@ -6,9 +6,9 @@ endpoints:
       - name: X-Scope-OrgID
         value: fake
     query_offsets:
-      - 0      # now
-      - 3600   # 1 hour ago
-      - 14400  # 4 hours ago
+      - now
+      - now-1h
+      - now-6h
 
   - name: apple_ip
     address: http://192.168.1.110:9090/
@@ -16,6 +16,6 @@ endpoints:
       - name: X-Scope-OrgID
         value: fake
     query_offsets:
-      - 0      # now
-      - 3600   # 1 hour ago
-      - 14400  # 4 hours ago
+      - now
+      - now-1h
+      - now-6h
