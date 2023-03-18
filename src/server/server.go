@@ -120,7 +120,7 @@ func (s *Server) recordMetrics() {
 					queryPortError.WithLabelValues(endpoint.Name).Set(float64(portErrors))
 					querySuccess.WithLabelValues(endpoint.Name, queryOffset).Set(float64(success))
 					queryStatus.WithLabelValues(endpoint.Name, queryOffset).Set(float64(statusCode))
-					queryInfo.WithLabelValues(endpoint.Address, endpoint.Name, endpoint.Query, queryOffset).Set(1)
+					queryInfo.WithLabelValues(endpoint.Address, endpoint.Name, query, queryOffset).Set(1)
 					queryTimestamp.WithLabelValues(endpoint.Name, queryOffset).Set(float64(timestamp))
 					queryDuration.WithLabelValues(endpoint.Name, queryOffset).Set(float64(duration))
 					queryTimestampError.WithLabelValues(endpoint.Name, queryOffset).Set(float64(timestampParseError))
